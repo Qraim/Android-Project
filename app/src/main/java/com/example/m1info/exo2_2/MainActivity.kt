@@ -11,6 +11,7 @@ import android.widget.EditText
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,44 +21,57 @@ import fr.angersuniv.mob.tp01.createlayoutandmenu.FakeData
 
 class MainActivity : AppCompatActivity() {
 
+    lateinit var recycleradapter: RecyclerViewAdapter
+    lateinit var RecyclerView: RecyclerView
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val recycleradapter = RecyclerViewAdapter(this)
-
-        //val listadapter = Adapter(this);
-
-        val RecyclerView = findViewById<RecyclerView>(R.id.rv_mon_recyclerview)
-
-        //val listView = findViewById<ListView>(R.id.lv_ma_list_view)
-
+        recycleradapter = RecyclerViewAdapter(this)
+        RecyclerView = findViewById<RecyclerView>(R.id.rv_mon_recyclerview)
 
         RecyclerView.adapter = recycleradapter
-
-        //listView.adapter = listadapter
 
         RecyclerView.layoutManager = LinearLayoutManager(this)
         val dividerItemDecoration = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
         RecyclerView.addItemDecoration(dividerItemDecoration)
 
-
         val tasks = FakeData.get_tasks()
 
         for (task in tasks) {
             recycleradapter.ajouter("$task")
-            //listadapter.ajoute("$task")
         }
 
     }
 
 
+    private val startAddMenuActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val data = result.data
+            val tache = data?.getStringExtra("tache")
+            val prio = data?.getStringExtra("prio")
+            Toast.makeText(this, "Tâche reçue: $tache, Priorité: $prio", Toast.LENGTH_SHORT).show()
+
+            recycleradapter.ajouter("<$prio> $tache")
+
+            println("bien ajoué")
+
+        } else {
+            Toast.makeText(this, "Tâche invalide", Toast.LENGTH_SHORT).show()
+
+        }
+    }
+
+    // Sert à afficher le menu
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
+    // Sert à lancer les actions suite au déclenchement d'un menu
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId){
             R.id.menu2 -> {
@@ -68,7 +82,8 @@ class MainActivity : AppCompatActivity() {
 
             R.id.menu1 -> {
                 val intent = Intent(this, addmenu::class.java)
-                startActivity(intent)
+                startAddMenuActivity.launch(intent)
+                //startActivity(intent)
                 true
             }
 

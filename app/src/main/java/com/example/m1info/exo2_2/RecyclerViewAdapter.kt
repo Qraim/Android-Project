@@ -54,19 +54,22 @@ MonViewHolder>() {
         }
     }
 
-    fun ajouter(str : String) {
+    fun ajouter(str: String) {
         ma_liste.add(str)
-        notifyItemInserted(ma_liste.size)
+        notifyItemInserted(ma_liste.size - 1)
+        println("test")
     }
 
+
     fun remove(p0 : Int) {
-        if(ma_liste.size < p0 || 0 > p0 ) {
-            return
+        if (p0 < 0 || p0 >= ma_liste.size) {
+            Toast.makeText(context, "Position invalide", Toast.LENGTH_SHORT).show()
         } else {
             ma_liste.removeAt(p0)
             notifyItemRemoved(p0)
         }
     }
+
 
     fun insertion(p0 : Int, str : String) {
 

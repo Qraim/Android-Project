@@ -1,5 +1,6 @@
 package com.example.m1info.exo2_2
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -22,17 +23,31 @@ class addmenu : AppCompatActivity() {
     fun on_btn_valider(view: View) {
 
         val tache = edittext?.text.toString()
-
         val radioGroup = findViewById<RadioGroup>(R.id.groupradio)
         val selectedId = radioGroup.checkedRadioButtonId
-
         val radioButton = findViewById<RadioButton>(selectedId)
+        var prio = radioButton.text.toString()
 
-        val prio = radioButton.text.toString()
-
-
+        if(prio == "Élevée")
+            prio = 3.toString()
+        else if(prio == "Moyenne")
+            prio = 2.toString()
+        else if(prio =="Basse")
+            prio = 1.toString()
 
         Toast.makeText(this, "Tâche: $tache, Priorité: $prio", Toast.LENGTH_SHORT).show()
+
+        val returnIntent = Intent()
+        returnIntent.putExtra("tache", tache)
+
+        returnIntent.putExtra("prio", prio)
+
+        setResult(RESULT_OK, returnIntent)
+
+        println("return$tache$prio")
+
+        finish()
+
     }
 
 
